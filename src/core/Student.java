@@ -1,64 +1,183 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class Student {
-    private String regNumber;
-    private String firstName;
-    private String lastName;
+    private String regNo;
+    private String name;
     private String email;
     private ArrayList<Course> courses;
 
     // No argument constructor
     public Student() {
-        regNumber = "null";
-        firstName = "null";
-        lastName = "null";
-        email = "null";
-        courses = new ArrayList<>();
+        this.regNo = null;
+        this.name = null;
+        this.email = null;
+        this.courses = new ArrayList<>();
     }
 
     // All argument constructor
-    public Student(String firstName, String lastName, String email,  String regNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Student(String regNo, String name, String email) {
+        if (regNo == null || regNo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Registration number cannot be null or empty");
+        }
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        this.regNo = regNo;
+        this.name = name;
         this.email = email;
-        this.regNumber = regNumber;
-        courses = new ArrayList<>();
-    }
-    // firstName & lastname Constructor
-    public Student(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        courses = new ArrayList<>();
+        this.courses = new ArrayList<>();
     }
 
-    // regNumber constructor
-    public Student(String regNumber) {
-        this.regNumber = regNumber;
-        courses = new ArrayList<>();
+    // Getters and Setters
+    public String getRegNo() {
+        return regNo;
     }
 
-    // getters & setters
-    public String getFirstName() {return firstName;}
-    public void setFirstName(String firstName) {this.firstName = firstName;}
+    public void setRegNo(String regNo) {
+        if (regNo == null || regNo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Registration number cannot be null or empty");
+        }
+        this.regNo = regNo;
+    }
 
-    public String getLastName() {return lastName;}
-    public void setLastName(String lastName) {this.lastName = lastName;}
+    public String getName() {
+        return name;
+    }
 
-    public String getEmail() {return email;}
-    public void setEmail(String email) {this.email = email;}
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        this.name = name;
+    }
 
-    public String getRegNumber() {return regNumber;}
-    public void setRegNumber(String regNumber) {this.regNumber = regNumber;}
+    public String getEmail() {
+        return email;
+    }
 
-    public ArrayList<Course> getCourses() {return courses;}
-    public void addCourse(Course course) {courses.add(course);}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public void printCourses() {
-        for (Course course : courses) {
-            System.out.println(course.getCourseCode() + " " + course.getCourseTitle());
+    /**
+     * Returns an unmodifiable view of the student's courses.
+     * This prevents external modification of the internal list.
+     *
+     * @return unmodifiable list of courses
+     */
+    public List<Course> getCourses() {
+        return Collections.unmodifiableList(courses);
+    }
+
+    /**
+     * PUBLIC method to add a course to this student's enrollment.
+     * This method maintains bidirectional relationship consistency by
+     * automatically updating both the student's course list and the
+     * course's student list.
+     *
+     * @param course the course to add
+     * @throws IllegalArgumentException if course is null
+     */
+    public void addCourse(Course course) {
+        if (course == null) {
+            throw new IllegalArgumentException("Cannot add null course");
+        }
+        if (!courses.contains(course)) {
+            courses.add(course);
+            course.enrollStudentInternal(this);  // Sync the other side
         }
     }
 
+    /**
+     * PACKAGE-PRIVATE method called only by Course class to maintain
+     * bidirectional relationship. This prevents infinite recursion.
+     * External code cannot call this method.
+     *
+     * @param course the course to add internally
+     */
+    void addCourseInternal(Course course) {
+        if (!courses.contains(course)) {
+            courses.add(course);
+        }
+    }
+
+    /**
+     * PUBLIC method to remove a course from this student's enrollment.
+     * Maintains bidirectional relationship consistency.
+     *
+     * @param course the course to remove
+     * @throws IllegalArgumentException if course is null
+     */
+    public void removeCourse(Course course) {
+        if (course == null) {
+            throw new IllegalArgumentException("Cannot remove null course");
+        }
+        if (courses.remove(course)) {
+            course.removeStudentInternal(this);  // Sync the other side
+        }
+    }
+
+    /**
+     * PACKAGE-PRIVATE method called only by Course class.
+     *
+     * @param course the course to remove internally
+     */
+    void removeCourseInternal(Course course) {
+        courses.remove(course);
+    }
+
+    /**
+     * Prints all courses this student is enrolled in.
+     */
+    public void printCourses() {
+        if (courses.isEmpty()) {
+            System.out.println("No courses enrolled");
+            return;
+        }
+        System.out.println("Courses for " + name + ":");
+        for (Course course : courses) {
+            System.out.println("  " + course.getCourseCode() + " - " + course.getCourseTitle());
+        }
+    }
+
+    /**
+     * Compares students based on their registration number.
+     * Two students are equal if they have the same regNo.
+     *
+     * @param o the object to compare
+     * @return true if students have the same regNo
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return Objects.equals(regNo, student.regNo);
+    }
+
+    /**
+     * Hash code based on registration number.
+     *
+     * @return hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(regNo);
+    }
+
+    /**
+     * String representation of student.
+     *
+     * @return formatted string with student details
+     */
+    @Override
+    public String toString() {
+        return String.format("Student{regNo='%s', name='%s', email='%s', courses=%d}",
+                regNo, name, email, courses.size());
+    }
 }

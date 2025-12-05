@@ -1,41 +1,94 @@
 package core;
-import java.util.ArrayList;
+
+import java.util.*;
 
 public class Course {
-    private String courseCode;
+    private final String courseCode;  // Final - can't change after construction
     private String courseTitle;
-    private ArrayList<Student> students;
+    private final List<Student> students;
 
-    // no argument constructor
-    public Course(){
-        students = new ArrayList<>();
-        courseCode  = "null";
-        courseTitle = "null";
-    }
-
-    // courseCode & courseTitle constructor
     public Course(String courseCode, String courseTitle) {
+        if (courseCode == null || courseCode.trim().isEmpty()) {
+            throw new IllegalArgumentException("Course code cannot be null or empty");
+        }
+        if (courseTitle == null || courseTitle.trim().isEmpty()) {
+            throw new IllegalArgumentException("Course title cannot be null or empty");
+        }
         this.courseCode = courseCode;
         this.courseTitle = courseTitle;
-        students = new ArrayList<>();
+        this.students = new ArrayList<>();
     }
 
-    // getters & setters
-    public String  getCourseCode() {return courseCode;}
-    public void setCourseCode(String courseCode) {this.courseCode = courseCode;}
+    public String getCourseCode() {
+        return courseCode;
+    }
 
-    public String getCourseTitle() {return courseTitle;}
-    public void setCourseTitle(String courseTitle) {this.courseTitle = courseTitle;}
+    public String getCourseTitle() {
+        return courseTitle;
+    }
 
-    public ArrayList<Student> getStudents() {return students;}
-    //public void setStudents() {this.students = students;}
-    public void enrollStudent(Student student) {students.add(student);}
-    public void removeStudent(Student student) {students.remove(student);}
-    //public void setStudents(ArrayList<Student> students) {this.students = students;}
-
-    public void printStudents(){
-        for(Student student : students){
-            System.out.println(student.getFirstName() + " " + student.getLastName());
+    public void setCourseTitle(String courseTitle) {
+        if (courseTitle == null || courseTitle.trim().isEmpty()) {
+            throw new IllegalArgumentException("Course title cannot be null or empty");
         }
+        this.courseTitle = courseTitle;
+    }
+
+    public List<Student> getStudents() {
+        return Collections.unmodifiableList(students);
+    }
+
+    public boolean enrollStudent(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Cannot enroll null student");
+        }
+        if (students.contains(student)) {
+            return false;  // Already enrolled
+        }
+        students.add(student);
+        student.addCourseInternal(this);
+        return true;
+    }
+
+    public boolean removeStudent(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Cannot remove null student");
+        }
+        boolean removed = students.remove(student);
+        if (removed) {
+            student.removeCourseInternal(this);
+        }
+        return removed;
+    }
+
+    void enrollStudentInternal(Student student) {
+        if (!students.contains(student)) {
+            students.add(student);
+        }
+    }
+
+    void removeStudentInternal(Student student) {
+        students.remove(student);
+    }
+
+    public void showDetails() {
+        System.out.println("Course Code: " + courseCode + "Course Title: " + courseTitle);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(courseCode, course.courseCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseCode);
+    }
+    @Override
+    public String toString() {
+        return String.format("Course{code='%s', title='%s', enrolled=%d}",
+                courseCode, courseTitle, students.size());
     }
 }
