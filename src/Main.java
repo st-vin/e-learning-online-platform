@@ -1,35 +1,53 @@
-import core.Student;
-import core.Course;
+import exceptions.GradeNotFoundException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
-        Student student = new Student("in130002323", "Mark", "m@mail.com");
-        Student student2 = new Student("in140001823", "Maria", "maria@mail.com");
-        Student student3 = new Student("in130003323", "Marty", "marty@email.com");
-        Student student5 = new Student("in140001823", "Maria", "maria@mail.com");
+        // 1. Data storage using hashmap
+        HashMap<String, Integer> studentGrades = new HashMap<>();
 
-        Course course = new Course("CS101", "Java Programming");
+        // add sample student entries
+        studentGrades.put("Alicia", 70);
+        studentGrades.put("Brandon", 97);
+        studentGrades.put("Claire", 84);
 
-        // Option 1: Enroll from the course side
-        course.enrollStudent(student);
-        course.enrollStudent(student2);
-        course.enrollStudent(student3);
-        course.enrollStudent(student5);
-        // Result: student is in course.getStudents() AND course is in student.getCourses()
 
-        // Option 2: Add from student side
-        Course course2 = new Course("CS102", "Data Structures");
-        student.addCourse(course2);
-        // Result: course2 is in student.getCourses() AND student is in course2.getStudents()
+        // 2. Iteration over hashmap using enhanced for-loop
+        for (Map.Entry<String, Integer> entry : studentGrades.entrySet()) {
+            System.out.println("Name: " + entry.getKey() + " | Grade: " + entry.getValue());
+        }
 
-        // Both sync
-        System.out.println("Student's courses:");
-        student.printCourses();
-
-        System.out.println("\nCourse enrollments:");
-        String string = course.getStudents().toString();
-        System.out.println(string);
-        course.showDetails();
+        // 3. Exception Handling: Missing student grade
+        String studentToFind = "Daniel"; // student not added in the map
+        try {
+            int grade = getStudentGrade(studentGrades, studentToFind);
+            System.out.println("\nGrade for " + studentToFind + " is " + grade);
+        } catch (GradeNotFoundException ex) {
+            System.out.println("\nError: " + ex.getMessage());
+        }
     }
 
-}
+    private static int getStudentGrade(HashMap<String, Integer> gradesMap, String studentName)
+        throws GradeNotFoundException {
+
+            // Key missing → throw custom exception
+            if (!gradesMap.containsKey(studentName)) {
+                throw new GradeNotFoundException(
+                        "Grade not found for student: " + studentName
+                );
+            }
+
+            // Key exists but value may be null (legal HashMap scenario)
+            Integer grade = gradesMap.get(studentName);
+
+            if (grade == null) {
+                throw new GradeNotFoundException(
+                        "Grade for student '" + studentName + "' is stored as null."
+                );
+            }
+
+            return grade;
+        }
+    }
