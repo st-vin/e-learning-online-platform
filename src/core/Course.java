@@ -72,7 +72,7 @@ public class Course {
     }
 
     public void showDetails() {
-        System.out.println("Course Code: " + courseCode + "Course Title: " + courseTitle);
+        System.out.print("Course Code: " + courseCode + " Course Title: " + courseTitle);
     }
     @Override
     public boolean equals(Object o) {

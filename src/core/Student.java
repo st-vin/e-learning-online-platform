@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Student {
+public class Student implements Comparable<Student> {
     private String regNo;
     private String name;
     private String email;
@@ -31,6 +31,11 @@ public class Student {
         this.name = name;
         this.email = email;
         this.courses = new ArrayList<>();
+    }
+
+    public Student(String regNo, String name) {
+        this.regNo = regNo;
+        this.name = name;
     }
 
     // Getters and Setters
@@ -67,21 +72,15 @@ public class Student {
     /**
      * Returns an unmodifiable view of the student's courses.
      * This prevents external modification of the internal list.
-     *
-     * @return unmodifiable list of courses
      */
     public List<Course> getCourses() {
         return Collections.unmodifiableList(courses);
     }
 
     /**
-     * PUBLIC method to add a course to this student's enrollment.
-     * This method maintains bidirectional relationship consistency by
+     * addCourse method maintains bidirectional relationship consistency by
      * automatically updating both the student's course list and the
      * course's student list.
-     *
-     * @param course the course to add
-     * @throws IllegalArgumentException if course is null
      */
     public void addCourse(Course course) {
         if (course == null) {
@@ -96,9 +95,6 @@ public class Student {
     /**
      * PACKAGE-PRIVATE method called only by Course class to maintain
      * bidirectional relationship. This prevents infinite recursion.
-     * External code cannot call this method.
-     *
-     * @param course the course to add internally
      */
     void addCourseInternal(Course course) {
         if (!courses.contains(course)) {
@@ -106,13 +102,7 @@ public class Student {
         }
     }
 
-    /**
-     * PUBLIC method to remove a course from this student's enrollment.
-     * Maintains bidirectional relationship consistency.
-     *
-     * @param course the course to remove
-     * @throws IllegalArgumentException if course is null
-     */
+     // Maintains bidirectional relationship consistency.
     public void removeCourse(Course course) {
         if (course == null) {
             throw new IllegalArgumentException("Cannot remove null course");
@@ -122,18 +112,12 @@ public class Student {
         }
     }
 
-    /**
-     * PACKAGE-PRIVATE method called only by Course class.
-     *
-     * @param course the course to remove internally
-     */
+     // PACKAGE-PRIVATE method called only by Course class.
     void removeCourseInternal(Course course) {
         courses.remove(course);
     }
 
-    /**
-     * Prints all courses this student is enrolled in.
-     */
+     // Prints all courses this student is enrolled in.
     public void printCourses() {
         if (courses.isEmpty()) {
             System.out.println("No courses enrolled");
@@ -162,7 +146,6 @@ public class Student {
 
     /**
      * Hash code based on registration number.
-     *
      * @return hash code
      */
     @Override
@@ -172,12 +155,20 @@ public class Student {
 
     /**
      * String representation of student.
-     *
      * @return formatted string with student details
      */
     @Override
     public String toString() {
         return String.format("Student{regNo='%s', name='%s', email='%s', courses=%d}",
                 regNo, name, email, courses.size());
+    }
+/*    @Override
+    public String toString() {
+        return String.format("Student{regNo='%s', name='%s', email='%s'}",
+                regNo, name, email);
+    }*/
+    @Override
+    public int compareTo(Student other) {
+        return this.regNo.compareTo(other.regNo);
     }
 }
