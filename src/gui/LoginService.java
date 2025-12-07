@@ -6,7 +6,7 @@ public class LoginService {
 
     private final String url = "jdbc:mysql://localhost:3306/university";
     private final String user = "root";
-    private final String pass = "";
+    private final String pass = "2248";
 
     /**
      * Validates a user's login credentials against the students table.
