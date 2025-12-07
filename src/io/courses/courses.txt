@@ -1,0 +1,10 @@
+Course Code - Course Title
+CS101 - Introduction to Programming
+CS102 - Computer Organization and Architecture
+CS103 - Structural Programming in C
+CS206 - Object-Oriented Programming in Java
+CS200 - Python
+CS220 - Database Management
+CS225 - Computer Networking
+CS245 - Web Development
+CS330 - API Design and Implementation

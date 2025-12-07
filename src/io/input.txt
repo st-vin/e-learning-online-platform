@@ -1,0 +1,16 @@
+Login GUI Sketch and Components:
+a. Deliverable: Provide a simple text-based sketch (or description) of a Login
+GUI that includes: a JFrame, JLabel (for RegNo and Password), JTextField (for
+RegNo), JPasswordField (for Password), and a JButton (for Login).
+b. Discuss briefly the role of the ActionListener in handling the button click event.
+JDBC Validation Code:
+a. Write the complete Java code for an event handler method (e.g.,
+loginButton_Click) that performs user validation against a database named
+university. Assume a table named students with columns regNo and password.
+b. The code must include:
+Establishing a Connection to the database (provide a standard URL).
+Using a PreparedStatement for security.
+Binding the user's RegNo and Password input to the statement.
+Executing the query and using ResultSet to check for a successful
+login.
+Include appropriate exception handling (SQLException).
